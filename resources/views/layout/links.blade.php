@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{{asset('fonts/icomoon/style.css')}}">
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+<link rel="stylesheet" href="{{asset('css/select2.min.css')}}">
 
 <!-- Style -->
 <link rel="stylesheet" href="{{asset('css/style.css')}}">

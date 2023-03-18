@@ -20,7 +20,7 @@
             <tbody>
                 @foreach($prices as $price)
                 <tr>
-                    <td scope="row">{{ isset($price->date)? $price->date : '' }}</td>
+                    <td scope="row">{{ isset($price->date)? date('M d, Y', $price->date) : '' }}</td>
                     <td scope="row">{{ isset($price->open)? $price->open : '' }}</td>
                     <td scope="row">{{ isset($price->high)? $price->high : '' }}</td>
                     <td scope="row">{{ isset($price->low)? $price->low : '' }}</td>

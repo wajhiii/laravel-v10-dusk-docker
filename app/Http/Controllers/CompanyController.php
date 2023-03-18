@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\Http\Requests\CompanyRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CompanyEmail;
 
 class CompanyController extends Controller
 {
@@ -20,25 +21,29 @@ class CompanyController extends Controller
 
     public function index()
     {
-        try {
-            $response = $this->client->request('GET', 'https://pkgstore.datahub.io/core/nasdaq-listings/nasdaq-listed_json/data/a5bc7580d6176d60ac0b2142ca8d7df6/nasdaq-listed_json.json');
-            $companyData =  json_decode($response->getBody()->getContents());
-        } catch (RequestException $e) {
-            $companyData = [];
-        }
-        return view('company.form', compact('companyData'));
+        return view('company.form');
     }
 
-
+    public function symbolData()
+    {
+        
+        $data = $this->getSymbol();
+        $companyData = $data['value'];
+        return response()->json($companyData);
+    }
 
     public function store(CompanyRequest $request)
     {
         $request->validated();
-
-        //email send from here
+        try {
+            if($request->company_name){
+                Mail::to($request->email)->send(new CompanyEmail($request->all()))->from('info@xm.net', 'Assignment');
+            }
+        } catch (\Exception $e) {
+            \Log::error($e->getMessage());
+        }
 
         return redirect()->route('show', ['symbol' => $request->symbol]);
-
     }
 
     public function show($symbol)
@@ -63,6 +68,29 @@ class CompanyController extends Controller
         }
 
         return view('company.show',compact('labels', 'openData', 'closeData', 'prices'));
+
+    }
+
+    public function getSymbol()
+    {
+        try {
+            $response = $this->client->request('GET', 'https://pkgstore.datahub.io/core/nasdaq-listings/nasdaq-listed_json/data/a5bc7580d6176d60ac0b2142ca8d7df6/nasdaq-listed_json.json');
+
+            return
+            [
+                'error' => false,
+                'value' => json_decode($response->getBody()->getContents())
+            ];
+        } catch (RequestException $e) {
+            $response = $e->getResponse();
+            $body = $response->getBody()->getContents();
+            return
+            [
+                'error' => true,
+                'message' => json_decode($body),
+                'value' => [],
+            ];
+        }
 
     }
 

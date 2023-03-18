@@ -18,5 +18,8 @@ use App\Http\Controllers\CompanyController;
 Route::get('/', [CompanyController::class, 'index']);
 Route::post('/store', [CompanyController::class, 'store'])->name('store');
 Route::get('/show/{symbol}', [CompanyController::class, 'show'])->name('show');
+Route::get('/symbolData', [CompanyController::class, 'symbolData'])->name('symbolData');
+
+
 
 
